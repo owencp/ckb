@@ -390,6 +390,8 @@ fn all_specs() -> Vec<Box<dyn Spec>> {
         Box::new(SyncTooNewBlock),
         Box::new(RelayTooNewBlock),
         Box::new(LastCommonHeaderForPeerWithWorseChain),
+        Box::new(GetGcsFilters),
+        Box::new(GetGcsFilterHashes),
     ];
     specs.shuffle(&mut thread_rng());
     specs
