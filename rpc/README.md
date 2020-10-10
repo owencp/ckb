@@ -91,6 +91,7 @@ For example, a method is marked as deprecated in 0.35.0, it can be disabled in 0
     * [Type `BannedAddr`](#type-bannedaddr)
     * [Type `Block`](#type-block)
     * [Type `BlockEconomicState`](#type-blockeconomicstate)
+    * [Type `BlockIssuance`](#type-blockissuance)
     * [Type `BlockNumber`](#type-blocknumber)
     * [Type `BlockReward`](#type-blockreward)
     * [Type `BlockTemplate`](#type-blocktemplate)
@@ -3554,17 +3555,34 @@ The JSON view of a Block used as a parameter in the RPC.
 
 ### Type `BlockEconomicState`
 
-Block base rewards.
+Block Economic State.
+
+It includes the rewards details and when it is finalized.
 
 #### Fields
 
 `BlockEconomicState` is a JSON object with the following fields.
+
+*   `issuance`: [`BlockIssuance`](#type-blockissuance) - Block base rewards.
 
 *   `miner_reward`: [`MinerReward`](#type-minerreward) - Block rewards for miners.
 
 *   `txs_fee`: [`Capacity`](#type-capacity) - The total fees of all transactions committed in the block.
 
 *   `finalized_at`: [`H256`](#type-h256) - The block hash of the block which creates the rewards as cells in its cellbase transaction.
+
+
+### Type `BlockIssuance`
+
+Block base rewards.
+
+#### Fields
+
+`BlockIssuance` is a JSON object with the following fields.
+
+*   `primary`: [`Capacity`](#type-capacity) - The primary base rewards.
+
+*   `secondary`: [`Capacity`](#type-capacity) - The secondary base rewards.
 
 
 ### Type `BlockNumber`
@@ -4124,7 +4142,9 @@ CKB adjusts difficulty based on epochs.
 
     It also equals the total count of blocks in all the epochs which epoch number is less than this epoch.
 
-*   `length`: [`BlockNumber`](#type-blocknumber) - The resulting type after obtaining ownership.
+*   `length`: [`BlockNumber`](#type-blocknumber) - The number of blocks in this epoch.
+
+*   `compact_target`: [`Uint32`](#type-uint32) - The difficulty target for any block in this epoch.
 
 
 ### Type `EstimateResult`
@@ -4135,7 +4155,7 @@ The estimated fee rate.
 
 `EstimateResult` is a JSON object with the following fields.
 
-*   `fee_rate`: [`FeeRate`](#type-feerate) - The resulting type after obtaining ownership.
+*   `fee_rate`: [`FeeRate`](#type-feerate) - The estimated fee rate.
 
 
 ### Type `FeeRate`
