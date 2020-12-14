@@ -11,6 +11,10 @@ repository = "https://github.com/nervosnetwork/ckb"
 [dependencies]
 ckb-types = { path = "../util/types", version = "= 0.39.0-pre" }
 ckb-script = { path = "../script", version = "= 0.39.0-pre", default-features = false, features = [] }
+ckb-network = { path = "../network", version = "= 0.39.0-pre" }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
 
 # Prevent this from interfering with workspaces
 [workspace]
