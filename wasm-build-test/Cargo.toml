@@ -12,6 +12,7 @@ repository = "https://github.com/nervosnetwork/ckb"
 ckb-types = { path = "../util/types", version = "= 0.39.0-pre" }
 ckb-script = { path = "../script", version = "= 0.39.0-pre", default-features = false, features = [] }
 ckb-network = { path = "../network", version = "= 0.39.0-pre" }
+ckb-hash = { path = "../util/hash", version = "= 0.39.0-pre" }
 
 [dev-dependencies]
 wasm-bindgen-test = "0.3"
