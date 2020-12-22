@@ -7,7 +7,7 @@ use ckb_types::{packed, prelude::*};
 use std::sync::Arc;
 use std::time::Instant;
 
-const MAX_FILTER_RANGE_SIZE: usize = 2000;
+const MAX_FILTER_RANGE_SIZE: usize = 200;
 const MIN_CHECK_POINT_INTERVAL: u32 = 200_000;
 
 pub struct GcsFilterProtocol {
