@@ -33,7 +33,9 @@ impl GcsFilterProtocol {
                     for block_number in
                         (message.start_number().unpack()..=end_number).take(MAX_FILTER_RANGE_SIZE)
                     {
-                        if let Some(hash) = store.get_block_hash(block_number) {
+                        info!("outer: sends a GcsFilterMessage::filter, block num is {}", block_number);
+                        if let Some(hash) = store.get_block_hash(block_number.clone()) {
+                        info!("inner: sends a GcsFilterMessage::filter, block num is {}", block_number);
                             if let Some(filter) = store.get_gcs_filter(&hash) {
                                 let msg = packed::GcsFilterMessage::new_builder()
                                     .set(
@@ -49,6 +51,7 @@ impl GcsFilterProtocol {
                                         err
                                     );
                                 }
+                                info!("inside: sends a GcsFilterMessage::filter, block num is {}", block_number);
                             }
                         }
                     }
