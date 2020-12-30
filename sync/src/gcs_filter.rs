@@ -7,7 +7,7 @@ use ckb_types::{packed, prelude::*};
 use std::sync::Arc;
 use std::time::Instant;
 
-const MAX_FILTER_RANGE_SIZE: usize = 200;
+const MAX_FILTER_RANGE_SIZE: usize = 2000;
 const MIN_CHECK_POINT_INTERVAL: u32 = 200_000;
 
 pub struct GcsFilterProtocol {
@@ -33,9 +33,7 @@ impl GcsFilterProtocol {
                     for block_number in
                         (message.start_number().unpack()..=end_number).take(MAX_FILTER_RANGE_SIZE)
                     {
-                        info!("outer: sends a GcsFilterMessage::filter, block num is {}", block_number);
-                        if let Some(hash) = store.get_block_hash(block_number.clone()) {
-                        info!("inner: sends a GcsFilterMessage::filter, block num is {}", block_number);
+                        if let Some(hash) = store.get_block_hash(block_number) {
                             if let Some(filter) = store.get_gcs_filter(&hash) {
                                 let msg = packed::GcsFilterMessage::new_builder()
                                     .set(
@@ -51,7 +49,6 @@ impl GcsFilterProtocol {
                                         err
                                     );
                                 }
-                                info!("inside: sends a GcsFilterMessage::filter, block num is {}", block_number);
                             }
                         }
                     }
@@ -60,7 +57,7 @@ impl GcsFilterProtocol {
             packed::GcsFilterMessageUnionReader::GetGcsFilterHashes(reader) => {
                 let message = reader.to_entity();
                 let store = self.shared.store();
-                let stop_hash = message.stop_hash();
+                let mut stop_hash = message.stop_hash();
                 if let Some(end_number) = store.get_block_number(&stop_hash) {
                     let start_number = message.start_number().unpack();
                     if let Some(parent_hash) = store.get_block_hash(start_number).and_then(|hash| {
@@ -71,6 +68,7 @@ impl GcsFilterProtocol {
                         let filter_hashes = (start_number..=end_number)
                             .take(MAX_FILTER_RANGE_SIZE)
                             .filter_map(|block_number| {
+                                stop_hash = store.get_block_hash(block_number.clone()).expect("store block");
                                 store
                                     .get_block_hash(block_number)
                                     .and_then(|hash| store.get_gcs_filter(&hash))
@@ -83,7 +81,7 @@ impl GcsFilterProtocol {
                                 .set(
                                     packed::GcsFilterHashes::new_builder()
                                         .parent_hash(parent_hash)
-                                        .stop_hash(message.stop_hash())
+                                        .stop_hash(stop_hash)
                                         .filter_hashes(filter_hashes.pack())
                                         .build(),
                                 )

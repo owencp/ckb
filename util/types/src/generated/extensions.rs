@@ -14123,6 +14123,7 @@ impl GcsFilterMessage {
             3 => GcsFilterHashes::new_unchecked(inner).into(),
             4 => GetGcsFilterCheckPoint::new_unchecked(inner).into(),
             5 => GcsFilterCheckPoint::new_unchecked(inner).into(),
+            6 => SendTransaction::new_unchecked(inner).into(),
             _ => panic!("{}: invalid data", Self::NAME),
         }
     }
@@ -14192,6 +14193,7 @@ impl<'r> GcsFilterMessageReader<'r> {
             3 => GcsFilterHashesReader::new_unchecked(inner).into(),
             4 => GetGcsFilterCheckPointReader::new_unchecked(inner).into(),
             5 => GcsFilterCheckPointReader::new_unchecked(inner).into(),
+            6 => SendTransactionReader::new_unchecked(inner).into(),
             _ => panic!("{}: invalid data", Self::NAME),
         }
     }
@@ -14223,6 +14225,7 @@ impl<'r> molecule::prelude::Reader<'r> for GcsFilterMessageReader<'r> {
             3 => GcsFilterHashesReader::verify(inner_slice, compatible),
             4 => GetGcsFilterCheckPointReader::verify(inner_slice, compatible),
             5 => GcsFilterCheckPointReader::verify(inner_slice, compatible),
+            6 => SendTransactionReader::verify(inner_slice, compatible),
             _ => ve!(Self, UnknownItem, Self::ITEMS_COUNT, item_id),
         }?;
         Ok(())
@@ -14265,6 +14268,7 @@ pub enum GcsFilterMessageUnion {
     GcsFilterHashes(GcsFilterHashes),
     GetGcsFilterCheckPoint(GetGcsFilterCheckPoint),
     GcsFilterCheckPoint(GcsFilterCheckPoint),
+    SendTransaction(SendTransaction),
 }
 #[derive(Debug, Clone, Copy)]
 pub enum GcsFilterMessageUnionReader<'r> {
@@ -14274,6 +14278,7 @@ pub enum GcsFilterMessageUnionReader<'r> {
     GcsFilterHashes(GcsFilterHashesReader<'r>),
     GetGcsFilterCheckPoint(GetGcsFilterCheckPointReader<'r>),
     GcsFilterCheckPoint(GcsFilterCheckPointReader<'r>),
+    SendTransaction(SendTransactionReader<'r>),
 }
 impl ::core::default::Default for GcsFilterMessageUnion {
     fn default() -> Self {
@@ -14305,6 +14310,9 @@ impl ::core::fmt::Display for GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterCheckPoint(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, GcsFilterCheckPoint::NAME, item)
             }
+            GcsFilterMessageUnion::SendTransaction(ref item) => {
+                write!(f, "{}::{}({})", Self::NAME, SendTransaction::NAME, item)
+            }
         }
     }
 }
@@ -14333,6 +14341,9 @@ impl<'r> ::core::fmt::Display for GcsFilterMessageUnionReader<'r> {
             GcsFilterMessageUnionReader::GcsFilterCheckPoint(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, GcsFilterCheckPoint::NAME, item)
             }
+            GcsFilterMessageUnionReader::SendTransaction(ref item) => {
+                write!(f, "{}::{}({})", Self::NAME, SendTransaction::NAME, item)
+            }
         }
     }
 }
@@ -14345,6 +14356,7 @@ impl GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterHashes(ref item) => write!(f, "{}", item),
             GcsFilterMessageUnion::GetGcsFilterCheckPoint(ref item) => write!(f, "{}", item),
             GcsFilterMessageUnion::GcsFilterCheckPoint(ref item) => write!(f, "{}", item),
+            GcsFilterMessageUnion::SendTransaction(ref item) => write!(f, "{}", item),
         }
     }
 }
@@ -14357,6 +14369,7 @@ impl<'r> GcsFilterMessageUnionReader<'r> {
             GcsFilterMessageUnionReader::GcsFilterHashes(ref item) => write!(f, "{}", item),
             GcsFilterMessageUnionReader::GetGcsFilterCheckPoint(ref item) => write!(f, "{}", item),
             GcsFilterMessageUnionReader::GcsFilterCheckPoint(ref item) => write!(f, "{}", item),
+            GcsFilterMessageUnionReader::SendTransaction(ref item) => write!(f, "{}", item),
         }
     }
 }
@@ -14388,6 +14401,11 @@ impl ::core::convert::From<GetGcsFilterCheckPoint> for GcsFilterMessageUnion {
 impl ::core::convert::From<GcsFilterCheckPoint> for GcsFilterMessageUnion {
     fn from(item: GcsFilterCheckPoint) -> Self {
         GcsFilterMessageUnion::GcsFilterCheckPoint(item)
+    }
+}
+impl ::core::convert::From<SendTransaction> for GcsFilterMessageUnion {
+    fn from(item: SendTransaction) -> Self {
+        GcsFilterMessageUnion::SendTransaction(item)
     }
 }
 impl<'r> ::core::convert::From<GetGcsFiltersReader<'r>> for GcsFilterMessageUnionReader<'r> {
@@ -14422,6 +14440,11 @@ impl<'r> ::core::convert::From<GcsFilterCheckPointReader<'r>> for GcsFilterMessa
         GcsFilterMessageUnionReader::GcsFilterCheckPoint(item)
     }
 }
+impl<'r> ::core::convert::From<SendTransactionReader<'r>> for GcsFilterMessageUnionReader<'r> {
+    fn from(item: SendTransactionReader<'r>) -> Self {
+        GcsFilterMessageUnionReader::SendTransaction(item)
+    }
+}
 impl GcsFilterMessageUnion {
     pub const NAME: &'static str = "GcsFilterMessageUnion";
     pub fn as_bytes(&self) -> molecule::bytes::Bytes {
@@ -14432,6 +14455,7 @@ impl GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterHashes(item) => item.as_bytes(),
             GcsFilterMessageUnion::GetGcsFilterCheckPoint(item) => item.as_bytes(),
             GcsFilterMessageUnion::GcsFilterCheckPoint(item) => item.as_bytes(),
+            GcsFilterMessageUnion::SendTransaction(item) => item.as_bytes(),
         }
     }
     pub fn as_slice(&self) -> &[u8] {
@@ -14442,6 +14466,7 @@ impl GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterHashes(item) => item.as_slice(),
             GcsFilterMessageUnion::GetGcsFilterCheckPoint(item) => item.as_slice(),
             GcsFilterMessageUnion::GcsFilterCheckPoint(item) => item.as_slice(),
+            GcsFilterMessageUnion::SendTransaction(item) => item.as_slice(),
         }
     }
     pub fn item_id(&self) -> molecule::Number {
@@ -14452,6 +14477,7 @@ impl GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterHashes(_) => 3,
             GcsFilterMessageUnion::GetGcsFilterCheckPoint(_) => 4,
             GcsFilterMessageUnion::GcsFilterCheckPoint(_) => 5,
+            GcsFilterMessageUnion::SendTransaction(_) => 6,
         }
     }
     pub fn item_name(&self) -> &str {
@@ -14462,6 +14488,7 @@ impl GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterHashes(_) => "GcsFilterHashes",
             GcsFilterMessageUnion::GetGcsFilterCheckPoint(_) => "GetGcsFilterCheckPoint",
             GcsFilterMessageUnion::GcsFilterCheckPoint(_) => "GcsFilterCheckPoint",
+            GcsFilterMessageUnion::SendTransaction(_) => "SendTransaction",
         }
     }
     pub fn as_reader<'r>(&'r self) -> GcsFilterMessageUnionReader<'r> {
@@ -14472,6 +14499,7 @@ impl GcsFilterMessageUnion {
             GcsFilterMessageUnion::GcsFilterHashes(item) => item.as_reader().into(),
             GcsFilterMessageUnion::GetGcsFilterCheckPoint(item) => item.as_reader().into(),
             GcsFilterMessageUnion::GcsFilterCheckPoint(item) => item.as_reader().into(),
+            GcsFilterMessageUnion::SendTransaction(item) => item.as_reader().into(),
         }
     }
 }
@@ -14485,6 +14513,7 @@ impl<'r> GcsFilterMessageUnionReader<'r> {
             GcsFilterMessageUnionReader::GcsFilterHashes(item) => item.as_slice(),
             GcsFilterMessageUnionReader::GetGcsFilterCheckPoint(item) => item.as_slice(),
             GcsFilterMessageUnionReader::GcsFilterCheckPoint(item) => item.as_slice(),
+            GcsFilterMessageUnionReader::SendTransaction(item) => item.as_slice(),
         }
     }
     pub fn item_id(&self) -> molecule::Number {
@@ -14495,6 +14524,7 @@ impl<'r> GcsFilterMessageUnionReader<'r> {
             GcsFilterMessageUnionReader::GcsFilterHashes(_) => 3,
             GcsFilterMessageUnionReader::GetGcsFilterCheckPoint(_) => 4,
             GcsFilterMessageUnionReader::GcsFilterCheckPoint(_) => 5,
+            GcsFilterMessageUnionReader::SendTransaction(_) => 6,
         }
     }
     pub fn item_name(&self) -> &str {
@@ -14505,6 +14535,7 @@ impl<'r> GcsFilterMessageUnionReader<'r> {
             GcsFilterMessageUnionReader::GcsFilterHashes(_) => "GcsFilterHashes",
             GcsFilterMessageUnionReader::GetGcsFilterCheckPoint(_) => "GetGcsFilterCheckPoint",
             GcsFilterMessageUnionReader::GcsFilterCheckPoint(_) => "GcsFilterCheckPoint",
+            GcsFilterMessageUnionReader::SendTransaction(_) => "SendTransaction",
         }
     }
 }
@@ -15833,3 +15864,246 @@ impl molecule::prelude::Builder for GcsFilterCheckPointBuilder {
         GcsFilterCheckPoint::new_unchecked(inner.into())
     }
 }
+
+#[derive(Clone)]
+pub struct SendTransaction(molecule::bytes::Bytes);
+impl ::core::fmt::LowerHex for SendTransaction {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        use molecule::hex_string;
+        if f.alternate() {
+            write!(f, "0x")?;
+        }
+        write!(f, "{}", hex_string(self.as_slice()))
+    }
+}
+impl ::core::fmt::Debug for SendTransaction {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        write!(f, "{}({:#x})", Self::NAME, self)
+    }
+}
+impl ::core::fmt::Display for SendTransaction {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        write!(f, "{} {{ ", Self::NAME)?;
+        write!(f, "{}: {}", "transaction", self.transaction())?;
+        let extra_count = self.count_extra_fields();
+        if extra_count != 0 {
+            write!(f, ", .. ({} fields)", extra_count)?;
+        }
+        write!(f, " }}")
+    }
+}
+impl ::core::default::Default for SendTransaction {
+    fn default() -> Self {
+        let v: Vec<u8> = vec![
+            76, 0, 0, 0, 8, 0, 0, 0, 68, 0, 0, 0, 12, 0, 0, 0, 64, 0, 0, 0, 52, 0, 0, 0, 28, 0, 0,
+            0, 32, 0, 0, 0, 36, 0, 0, 0, 40, 0, 0, 0, 44, 0, 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, 0,
+        ];
+        SendTransaction::new_unchecked(v.into())
+    }
+}
+impl SendTransaction {
+    pub const FIELD_COUNT: usize = 1;
+    pub fn total_size(&self) -> usize {
+        molecule::unpack_number(self.as_slice()) as usize
+    }
+    pub fn field_count(&self) -> usize {
+        if self.total_size() == molecule::NUMBER_SIZE {
+            0
+        } else {
+            (molecule::unpack_number(&self.as_slice()[molecule::NUMBER_SIZE..]) as usize / 4) - 1
+        }
+    }
+    pub fn count_extra_fields(&self) -> usize {
+        self.field_count() - Self::FIELD_COUNT
+    }
+    pub fn has_extra_fields(&self) -> bool {
+        Self::FIELD_COUNT != self.field_count()
+    }
+    pub fn transaction(&self) -> Transaction {
+        let slice = self.as_slice();
+        let start = molecule::unpack_number(&slice[4..]) as usize;
+        if self.has_extra_fields() {
+            let end = molecule::unpack_number(&slice[8..]) as usize;
+            Transaction::new_unchecked(self.0.slice(start..end))
+        } else {
+            Transaction::new_unchecked(self.0.slice(start..))
+        }
+    }
+    pub fn as_reader<'r>(&'r self) -> SendTransactionReader<'r> {
+        SendTransactionReader::new_unchecked(self.as_slice())
+    }
+}
+impl molecule::prelude::Entity for SendTransaction {
+    type Builder = SendTransactionBuilder;
+    const NAME: &'static str = "SendTransaction";
+    fn new_unchecked(data: molecule::bytes::Bytes) -> Self {
+        SendTransaction(data)
+    }
+    fn as_bytes(&self) -> molecule::bytes::Bytes {
+        self.0.clone()
+    }
+    fn as_slice(&self) -> &[u8] {
+        &self.0[..]
+    }
+    fn from_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
+        SendTransactionReader::from_slice(slice).map(|reader| reader.to_entity())
+    }
+    fn from_compatible_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
+        SendTransactionReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
+    }
+    fn new_builder() -> Self::Builder {
+        ::core::default::Default::default()
+    }
+    fn as_builder(self) -> Self::Builder {
+        Self::new_builder().transaction(self.transaction())
+    }
+}
+#[derive(Clone, Copy)]
+pub struct SendTransactionReader<'r>(&'r [u8]);
+impl<'r> ::core::fmt::LowerHex for SendTransactionReader<'r> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        use molecule::hex_string;
+        if f.alternate() {
+            write!(f, "0x")?;
+        }
+        write!(f, "{}", hex_string(self.as_slice()))
+    }
+}
+impl<'r> ::core::fmt::Debug for SendTransactionReader<'r> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        write!(f, "{}({:#x})", Self::NAME, self)
+    }
+}
+impl<'r> ::core::fmt::Display for SendTransactionReader<'r> {
+    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
+        write!(f, "{} {{ ", Self::NAME)?;
+        write!(f, "{}: {}", "transaction", self.transaction())?;
+        let extra_count = self.count_extra_fields();
+        if extra_count != 0 {
+            write!(f, ", .. ({} fields)", extra_count)?;
+        }
+        write!(f, " }}")
+    }
+}
+impl<'r> SendTransactionReader<'r> {
+    pub const FIELD_COUNT: usize = 1;
+    pub fn total_size(&self) -> usize {
+        molecule::unpack_number(self.as_slice()) as usize
+    }
+    pub fn field_count(&self) -> usize {
+        if self.total_size() == molecule::NUMBER_SIZE {
+            0
+        } else {
+            (molecule::unpack_number(&self.as_slice()[molecule::NUMBER_SIZE..]) as usize / 4) - 1
+        }
+    }
+    pub fn count_extra_fields(&self) -> usize {
+        self.field_count() - Self::FIELD_COUNT
+    }
+    pub fn has_extra_fields(&self) -> bool {
+        Self::FIELD_COUNT != self.field_count()
+    }
+    pub fn transaction(&self) -> TransactionReader<'r> {
+        let slice = self.as_slice();
+        let start = molecule::unpack_number(&slice[4..]) as usize;
+        if self.has_extra_fields() {
+            let end = molecule::unpack_number(&slice[8..]) as usize;
+            TransactionReader::new_unchecked(&self.as_slice()[start..end])
+        } else {
+            TransactionReader::new_unchecked(&self.as_slice()[start..])
+        }
+    }
+}
+impl<'r> molecule::prelude::Reader<'r> for SendTransactionReader<'r> {
+    type Entity = SendTransaction;
+    const NAME: &'static str = "SendTransactionReader";
+    fn to_entity(&self) -> Self::Entity {
+        Self::Entity::new_unchecked(self.as_slice().to_owned().into())
+    }
+    fn new_unchecked(slice: &'r [u8]) -> Self {
+        SendTransactionReader(slice)
+    }
+    fn as_slice(&self) -> &'r [u8] {
+        self.0
+    }
+    fn verify(slice: &[u8], compatible: bool) -> molecule::error::VerificationResult<()> {
+        use molecule::verification_error as ve;
+        let slice_len = slice.len();
+        if slice_len < molecule::NUMBER_SIZE {
+            return ve!(Self, HeaderIsBroken, molecule::NUMBER_SIZE, slice_len);
+        }
+        let total_size = molecule::unpack_number(slice) as usize;
+        if slice_len != total_size {
+            return ve!(Self, TotalSizeNotMatch, total_size, slice_len);
+        }
+        if slice_len == molecule::NUMBER_SIZE && Self::FIELD_COUNT == 0 {
+            return Ok(());
+        }
+        if slice_len < molecule::NUMBER_SIZE * 2 {
+            return ve!(Self, HeaderIsBroken, molecule::NUMBER_SIZE * 2, slice_len);
+        }
+        let offset_first = molecule::unpack_number(&slice[molecule::NUMBER_SIZE..]) as usize;
+        if offset_first % 4 != 0 || offset_first < molecule::NUMBER_SIZE * 2 {
+            return ve!(Self, OffsetsNotMatch);
+        }
+        let field_count = offset_first / 4 - 1;
+        if field_count < Self::FIELD_COUNT {
+            return ve!(Self, FieldCountNotMatch, Self::FIELD_COUNT, field_count);
+        } else if !compatible && field_count > Self::FIELD_COUNT {
+            return ve!(Self, FieldCountNotMatch, Self::FIELD_COUNT, field_count);
+        };
+        let header_size = molecule::NUMBER_SIZE * (field_count + 1);
+        if slice_len < header_size {
+            return ve!(Self, HeaderIsBroken, header_size, slice_len);
+        }
+        let mut offsets: Vec<usize> = slice[molecule::NUMBER_SIZE..]
+            .chunks(molecule::NUMBER_SIZE)
+            .take(field_count)
+            .map(|x| molecule::unpack_number(x) as usize)
+            .collect();
+        offsets.push(total_size);
+        if offsets.windows(2).any(|i| i[0] > i[1]) {
+            return ve!(Self, OffsetsNotMatch);
+        }
+        TransactionReader::verify(&slice[offsets[0]..offsets[1]], compatible)?;
+        Ok(())
+    }
+}
+#[derive(Debug, Default)]
+pub struct SendTransactionBuilder {
+    pub(crate) transaction: Transaction,
+}
+impl SendTransactionBuilder {
+    pub const FIELD_COUNT: usize = 1;
+    pub fn transaction(mut self, v: Transaction) -> Self {
+        self.transaction = v;
+        self
+    }
+}
+impl molecule::prelude::Builder for SendTransactionBuilder {
+    type Entity = SendTransaction;
+    const NAME: &'static str = "SendTransactionBuilder";
+    fn expected_length(&self) -> usize {
+        molecule::NUMBER_SIZE * (Self::FIELD_COUNT + 1) + self.transaction.as_slice().len()
+    }
+    fn write<W: ::molecule::io::Write>(&self, writer: &mut W) -> ::molecule::io::Result<()> {
+        let mut total_size = molecule::NUMBER_SIZE * (Self::FIELD_COUNT + 1);
+        let mut offsets = Vec::with_capacity(Self::FIELD_COUNT);
+        offsets.push(total_size);
+        total_size += self.transaction.as_slice().len();
+        writer.write_all(&molecule::pack_number(total_size as molecule::Number))?;
+        for offset in offsets.into_iter() {
+            writer.write_all(&molecule::pack_number(offset as molecule::Number))?;
+        }
+        writer.write_all(self.transaction.as_slice())?;
+        Ok(())
+    }
+    fn build(&self) -> Self::Entity {
+        let mut inner = Vec::with_capacity(self.expected_length());
+        self.write(&mut inner)
+            .unwrap_or_else(|_| panic!("{} build should be ok", Self::NAME));
+        SendTransaction::new_unchecked(inner.into())
+    }
+}
+
