@@ -26,6 +26,29 @@ impl GcsFilterProtocol {
         message: packed::GcsFilterMessageUnionReader<'r>,
     ) {
         match message {
+            packed::GcsFilterMessageUnionReader::SendTransaction(reader) => {
+                let tx_pool = self.shared.shared().tx_pool_controller();
+                let tx = reader.transaction().to_entity().into_view();
+                let tx_hash = tx.hash();
+                let submit_result = tx_pool.submit_txs(vec![tx]);
+                match submit_result {
+                    Ok(Ok(_)) => {
+                        let peer_index = PeerIndex::new(usize::max_value());
+                        self.shared
+                            .state()
+                            .tx_hashes()
+                            .entry(peer_index)
+                            .or_default()
+                            .insert(tx_hash);
+                    }
+                    Ok(Err(err)) => {
+                        debug!("submit txs to pool error: {}", err);
+                    }
+                    Err(err) => {
+                        debug!("cannot submit txs to pool, error: {}", err);
+                    }
+                }
+            }
             packed::GcsFilterMessageUnionReader::GetGcsFilters(reader) => {
                 let message = reader.to_entity();
                 let store = self.shared.store();
