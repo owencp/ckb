@@ -3,7 +3,7 @@ use ckb_db::RocksDB;
 use ckb_db_schema::MIGRATION_VERSION_KEY;
 use ckb_error::{Error, InternalErrorKind};
 use ckb_logger::{error, info};
-use console::Term;
+use console::term::Term;
 pub use indicatif::{HumanDuration, MultiProgress, ProgressBar, ProgressDrawTarget, ProgressStyle};
 use std::collections::BTreeMap;
 use std::sync::Arc;
