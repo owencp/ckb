@@ -1,10 +1,10 @@
 
-use crate::{Net, Spec, TestProtocol};
+//use crate::{Net, Spec, TestProtocol};
 use ckb_sync::NetworkProtocol;
 use ckb_types::{packed, prelude::*};
 
 pub struct GetGcsFilterHashes;
-
+/*
 impl Spec for GetGcsFilterHashes {
     crate::name!("get_gcs_filter_hashes");
 
@@ -49,3 +49,4 @@ impl Spec for GetGcsFilterHashes {
         );
     }
 }
+*/

@@ -1,5 +1,5 @@
 use ckb_types::{packed, prelude::*};
-
+/*
 mod get_gcs_filters;
 mod get_gcs_filter_hashes;
 
@@ -14,3 +14,4 @@ fn gcs_filter_match(filter: &[u8], script_hashes: &[packed::Byte32]) -> bool {
     let mut input = std::io::Cursor::new(filter);
     reader.match_any(&mut input, &mut script_hashes.iter().map(|v| v.as_slice())).unwrap_or_default()
 }
+*/

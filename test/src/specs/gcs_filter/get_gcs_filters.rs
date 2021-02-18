@@ -1,11 +1,11 @@
 
 use super::gcs_filter_match;
-use crate::{Net, Spec, TestProtocol};
+//use crate::{Net, Spec, TestProtocol};
 use ckb_sync::NetworkProtocol;
 use ckb_types::{packed, prelude::*};
 
 pub struct GetGcsFilters;
-
+/*
 impl Spec for GetGcsFilters {
     crate::name!("get_gcs_filters");
 
@@ -51,3 +51,4 @@ fn match_filter(message: packed::GcsFilterMessage, block_hash: packed::Byte32, s
         false
     }
 }
+*/
